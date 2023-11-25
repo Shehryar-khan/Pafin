@@ -7,6 +7,7 @@ import {
   Request,
   Response,
   UseGuards,
+  Param,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { RegisterUserDTO } from './dto/register-user.dto';
@@ -94,19 +95,19 @@ export class UserController {
    * @param res
    * @returns
    */
-  @ApiOperation({ summary: 'Update User' })
+  @ApiOperation({ summary: 'Delete User' })
   @ApiResponse({
     status: 200,
-    description: 'Updated Successfully',
+    description: 'Deleted Successfully',
   })
   @UseGuards(UserAuthenticationGuard)
-  @Delete('delete')
+  @Delete('delete/:id')
   async deleteUser(
+    @Param('id') id: string,
     @GetUser() user: User,
-    @Body() userUpdate: UpdateUserDTO,
     @Request() req,
     @Response() res,
   ) {
-    return this.userService.updateUser(userUpdate, user, req, res);
+    return this.userService.deleteUser(id, user, req, res);
   }
 }

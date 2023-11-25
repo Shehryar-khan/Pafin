@@ -196,7 +196,43 @@ export class UserService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+
+  /**
+   *
+   * @param id
+   * @param user
+   * @param request
+   * @param response
+   * @returns
+   */
+  async deleteUser(
+    id: string,
+    user: User,
+    request: Request,
+    response: Response,
+  ) {
+    try {
+      console.log('id =>' , id , "user  =>" , user.id)
+      //Id user has entered and user's own id must match , user can not delete another user.Just himself
+      if (id != user.id) {
+        return response.status(HttpStatus.BAD_REQUEST).json({
+          code: HttpStatus.BAD_REQUEST,
+          message: RESPONSE_MESSAGE.NOT_ALLOWED_TO_DELETE,
+        });
+      }
+      await this.UserModel.delete({ id: id });
+
+      return response.status(HttpStatus.OK).json({
+        code: HttpStatus.OK,
+        message: RESPONSE_MESSAGE.USER_DELETED,
+      });
+
+    } catch (error) {
+      return response.status(HttpStatus.BAD_REQUEST).json({
+        code: HttpStatus.BAD_REQUEST,
+        message: error?.message,
+        error,
+      });
+    }
   }
 }

@@ -7,4 +7,6 @@ export enum RESPONSE_MESSAGE {
   NOT_ALLOWED_TO_EDIT = 'Update not possible',
   USER_UPDATED = 'User updated',
   NO_DATA_TO_UPDATE = 'No Data To Update',
+  NOT_ALLOWED_TO_DELETE = 'Not allowed to delete',
+  USER_DELETED = 'User Deleted',
 }
