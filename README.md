@@ -1,1 +1,2 @@
-# How to use
+## Setup
+To run this project, install it locally using npm:
