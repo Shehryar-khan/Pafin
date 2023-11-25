@@ -6,5 +6,5 @@ export enum RESPONSE_MESSAGE {
   USER_NOT_FOUND = 'User Not Found',
   NOT_ALLOWED_TO_EDIT = 'Update not possible',
   USER_UPDATED = 'User updated',
-  NO_DATA_TO_UPDATE = 'No Data To Update'
+  NO_DATA_TO_UPDATE = 'No Data To Update',
 }

@@ -1,11 +1,8 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Patch,
   Put,
-  Param,
   Delete,
   Request,
   Response,
@@ -15,14 +12,8 @@ import { UserService } from './user.service';
 import { RegisterUserDTO } from './dto/register-user.dto';
 import { LoginUserDTO } from './dto/login-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
-import { UserAuthenticationGuard } from '../authentication/user.guard'
-import {
-  ApiHeader,
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { UserAuthenticationGuard } from '../authentication/user.guard';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 import { GetUser } from './decorators/user.decorator';
 
@@ -43,7 +34,6 @@ export class UserController {
     status: 200,
     description: 'Registered Successfully',
   })
-
   @Post('register')
   async requestRegisterUser(
     @Body() userRegister: RegisterUserDTO,
@@ -65,7 +55,6 @@ export class UserController {
     status: 200,
     description: 'Login Successfully',
   })
-
   @Post('login')
   async requestLoginUser(
     @Body() userLogin: LoginUserDTO,
@@ -87,7 +76,6 @@ export class UserController {
     status: 200,
     description: 'Updated Successfully',
   })
-
   @UseGuards(UserAuthenticationGuard)
   @Put('update')
   async updateUser(
@@ -96,10 +84,8 @@ export class UserController {
     @Request() req,
     @Response() res,
   ) {
-    return this.userService.updateUser(userUpdate,user, req, res);
+    return this.userService.updateUser(userUpdate, user, req, res);
   }
-
-
 
   /**
    *
@@ -113,7 +99,6 @@ export class UserController {
     status: 200,
     description: 'Updated Successfully',
   })
-
   @UseGuards(UserAuthenticationGuard)
   @Delete('delete')
   async deleteUser(
@@ -122,8 +107,6 @@ export class UserController {
     @Request() req,
     @Response() res,
   ) {
-    return this.userService.updateUser(userUpdate,user, req, res);
+    return this.userService.updateUser(userUpdate, user, req, res);
   }
-
-  
 }
