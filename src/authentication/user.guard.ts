@@ -9,7 +9,7 @@ import * as jwt from 'jsonwebtoken';
 import { User } from '../user/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { RESPONSE_MESSAGE } from 'src/utils/enums/response.messages';
+import { RESPONSE_MESSAGE } from '../utils/enums/response.messages';
 
 @Injectable()
 export class UserAuthenticationGuard implements CanActivate {

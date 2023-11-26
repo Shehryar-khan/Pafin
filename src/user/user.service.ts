@@ -8,9 +8,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 import { RESPONSE_MESSAGE } from '../utils/enums/response.messages';
 import { generateJwtToken } from '../utils/helper-functions/generate-jwt';
-import { maskPassword } from 'src/utils/helper-functions/mask-password';
+import { maskPassword } from '../utils/helper-functions/mask-password';
 import { hashPassword } from '../utils/helper-functions/hash-password';
-import { passwordMatch } from 'src/utils/helper-functions/compare-password';
+import { passwordMatch } from '../utils/helper-functions/compare-password';
+
 @Injectable()
 export class UserService {
   constructor(@InjectRepository(User) private UserModel: Repository<User>) {}
@@ -26,7 +27,7 @@ export class UserService {
     userRegister: RegisterUserDTO,
     request: Request,
     response: Response,
-  ) {
+  ): Promise<User | any> {
     try {
       const ifExist = await this.UserModel.findOne({
         where: { email: userRegister.email },
@@ -44,6 +45,7 @@ export class UserService {
       user.password = hashPassword(userRegister.password);
       await this.UserModel.save(user);
 
+      maskPassword(user.password);
       return response.status(HttpStatus.CREATED).json({
         code: HttpStatus.CREATED,
         message: RESPONSE_MESSAGE.USER_REGISTERED,
@@ -107,6 +109,7 @@ export class UserService {
         },
       });
     } catch (error) {
+      console.log('error is ==>', error.message);
       return response.status(HttpStatus.BAD_REQUEST).json({
         code: HttpStatus.BAD_REQUEST,
         message: error?.message,
@@ -129,19 +132,22 @@ export class UserService {
   ) {
     try {
       //if the fields are empty , return don't make any db queries
+      console.log('user-id ==>', user.id);
       if (
         !updateUserDto.email &&
         !updateUserDto.name &&
         !updateUserDto.password
       ) {
         return response.status(HttpStatus.BAD_REQUEST).json({
-          code: HttpStatus.BAD_GATEWAY,
+          code: HttpStatus.BAD_REQUEST,
           message: RESPONSE_MESSAGE.NO_DATA_TO_UPDATE,
         });
       }
       const userInDB = await this.UserModel.findOne({
         where: { id: user.id },
       });
+      console.log('userInDB =>', userInDB);
+
       //If no user exist with the incoming Id return not found error
       if (!userInDB) {
         return response.status(HttpStatus.NOT_FOUND).json({
@@ -151,8 +157,8 @@ export class UserService {
       }
       /*If the data does not belong to the current user return not allowed error
         User can only update own data
-        Above database query won't give other person's data , Just to add the extra security this if check
-        has been implemented
+        Above database query won't give other person's data , Just to add the extra security this if check has been implemented
+        Would be better in the scenario when id is coming from the parameters
       */
       if (userInDB.id !== user.id) {
         return response.status(HttpStatus.METHOD_NOT_ALLOWED).json({
@@ -196,7 +202,6 @@ export class UserService {
     }
   }
 
-
   /**
    *
    * @param id
@@ -212,22 +217,41 @@ export class UserService {
     response: Response,
   ) {
     try {
-      console.log('id =>' , id , "user  =>" , user.id)
-      //Id user has entered and user's own id must match , user can not delete another user.Just himself
+      // Id user has entered and user's own id must match , user can not delete another user.Just himself
+      console.log('here', id, 'user id', user.id);
+
       if (id != user.id) {
-        return response.status(HttpStatus.BAD_REQUEST).json({
-          code: HttpStatus.BAD_REQUEST,
+        return response.status(HttpStatus.METHOD_NOT_ALLOWED).json({
+          code: HttpStatus.METHOD_NOT_ALLOWED,
           message: RESPONSE_MESSAGE.NOT_ALLOWED_TO_DELETE,
         });
       }
+
+      /*
+       This is kind of a useless query for now because it the user himself who is sending his id
+       Helpful when there is other related to the user or the provided id
+       */
+      const userExist = await this.UserModel.findOne({
+        where: {
+          id: id,
+        },
+      });
+
+      if (!userExist) {
+        return response.status(HttpStatus.NOT_FOUND).json({
+          code: HttpStatus.NOT_FOUND,
+          message: RESPONSE_MESSAGE.USER_NOT_FOUND,
+        });
+      }
+      console.log('then here');
       await this.UserModel.delete({ id: id });
 
       return response.status(HttpStatus.OK).json({
         code: HttpStatus.OK,
         message: RESPONSE_MESSAGE.USER_DELETED,
       });
-
     } catch (error) {
+      console.log('this is the error =>', error.message);
       return response.status(HttpStatus.BAD_REQUEST).json({
         code: HttpStatus.BAD_REQUEST,
         message: error?.message,

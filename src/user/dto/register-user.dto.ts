@@ -7,18 +7,19 @@ import {
   MinLength,
 } from 'class-validator';
 import { emailRegex, passwordRegEx } from '../../utils/enums/regex';
+import { RESPONSE_MESSAGE } from '../../utils/enums/response.messages';
 
 export class RegisterUserDTO {
   @ApiProperty()
   @IsString()
-  @MinLength(2, { message: 'Name must have atleast 2 characters.' })
+  @MinLength(2, { message: RESPONSE_MESSAGE.MIN_CHARACTERS })
   @IsNotEmpty()
   name: string;
 
   @ApiProperty()
   @IsEmail()
   @IsNotEmpty()
-  @Matches(emailRegex, { message: `Invalid email` })
+  @Matches(emailRegex, { message: RESPONSE_MESSAGE.INVALID_EMAIL })
   email: string;
 
   @ApiProperty()
@@ -27,11 +28,7 @@ export class RegisterUserDTO {
   @MinLength(5)
   @IsNotEmpty()
   @Matches(passwordRegEx, {
-    message: `Password must contain Minimum 8 and maximum 20 characters, 
-      at least one uppercase letter, 
-      one lowercase letter, 
-      one number and 
-      one special character`,
+    message: RESPONSE_MESSAGE.PASSWORD_ERRORS,
   })
   password: string;
 }
