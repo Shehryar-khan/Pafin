@@ -67,3 +67,7 @@ To run unit tests locally run this command in the terminal
 npm run test
 ```
 
+**For questions or feedback, feel free to contact:**
+
+- Shehryar Khan Tanoli (shehryar_tanoli@outlook.com)
+
