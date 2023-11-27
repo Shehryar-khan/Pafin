@@ -38,26 +38,25 @@ Project will start running on your machine. NodeJs Server and Postgres will spin
 ### API Documentations
 Run this command on local machine to see API Documentation
 ```bash
-localhost:{port}/api
+localhost:3000/api
 ```
-{port} has to be defined in the .env file
 
 ### API Routes
 Create User
 ```bash
-POST -> localhost:{port}/user/register
+POST -> localhost:3000/user/register
 ```
 Get User / Login User
 ```bash
-POST -> localhost:{port}/user/login
+POST -> localhost:3000/user/login
 ```
 Update User 
 ```bash
-PUT -> localhost:{port}/user/update
+PUT -> localhost:3000/user/update
 ```
 Delete User 
 ```bash
-DELETE -> localhost:{port}/user/delete/:id
+DELETE -> localhost:3000/user/delete/:id
 ```
 Update User and Delete User routes has to be authenticated with JWT
 
