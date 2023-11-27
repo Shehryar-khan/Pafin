@@ -14,6 +14,8 @@ import { UpdateUserDTO } from './dto/update-user.dto';
 import * as generateJwtUtils from '../utils/helper-functions/generate-jwt';
 import { maskPassword } from '../utils/helper-functions/mask-password';
 import { UpdateResult } from 'typeorm';
+import { TEST_CASE_DATA } from '../utils/enums/test.case.data';
+
 
 describe('UserService', () => {
   let userService: UserService;
@@ -44,12 +46,12 @@ describe('UserService', () => {
     //Register user Successfully
     it('should register a user successfully', async () => {
       const registerUserDto: RegisterUserDTO = {
-        name: 'Shehryar',
-        email: 'shehryar_tanoli@outlook.com',
-        password: 'password@P123',
+        name: TEST_CASE_DATA.NAME,
+        email: TEST_CASE_DATA.EMAIL,
+        password: TEST_CASE_DATA.PASSWORD,
       };
 
-      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null); // User does not exist in the database
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
       jest
         .spyOn(userRepository, 'save')
         .mockImplementation((user) => Promise.resolve(user as User));
@@ -70,9 +72,9 @@ describe('UserService', () => {
     //If Email address already exist
     it('should return conflict status if user already exists', async () => {
       const registerUserDto: RegisterUserDTO = {
-        name: 'Shehryar',
-        email: 'shehryar_tanoli@outlook.com',
-        password: 'password@P123',
+        name: TEST_CASE_DATA.NAME,
+        email: TEST_CASE_DATA.EMAIL,
+        password: TEST_CASE_DATA.PASSWORD,
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue({} as User);
@@ -96,15 +98,15 @@ describe('UserService', () => {
     //Login Ok
     it('should login user successfully with correct details', async () => {
       const loginUserDto: LoginUserDTO = {
-        email: 'shehryar_tanoli@outlook.com',
-        password: 'correctPassword',
+        email: TEST_CASE_DATA.EMAIL,
+        password: TEST_CASE_DATA.PASSWORD,
       };
 
       const user: User = {
-        id: '550e8400-e29b-41d4-a716-446655440000',
-        name: 'Shehryar',
-        email: 'shehryar_tanoli@outlook.com',
-        password: hashPassword('correctPassword'),
+        id: TEST_CASE_DATA.UUID,
+        name: TEST_CASE_DATA.NAME,
+        email: TEST_CASE_DATA.EMAIL,
+        password: hashPassword(TEST_CASE_DATA.PASSWORD),
       };
 
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(user);
@@ -128,7 +130,7 @@ describe('UserService', () => {
           id: user.id,
           name: user.name,
           email: user.email,
-          password: maskedPassword, // Assuming you have a logic to mask the password
+          password: maskedPassword,
         },
       });
     });
@@ -136,11 +138,11 @@ describe('UserService', () => {
     // If email does not exist
     it('should return user found status if user does not exist while login', async () => {
       const loginUserDto: LoginUserDTO = {
-        email: 'shehryar_tanoli@outlook.com',
-        password: 'password@P123',
+        email: TEST_CASE_DATA.EMAIL,
+        password: TEST_CASE_DATA.PASSWORD,
       };
 
-      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null); // User does not exist in the database
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
 
       await userService.requestLoginUser(
         loginUserDto,
@@ -165,10 +167,10 @@ describe('UserService', () => {
         password: '',
       };
       const user: User = {
-        id: '1',
-        name: 'Shehryar',
-        email: 'shehryar_tanoli@outlook.com',
-        password: 'password@P123',
+        id: TEST_CASE_DATA.UUID,
+        name: TEST_CASE_DATA.NAME,
+        email: TEST_CASE_DATA.EMAIL,
+        password: TEST_CASE_DATA.PASSWORD,
       };
       await userService.updateUser(
         updateUserDto,
@@ -186,17 +188,17 @@ describe('UserService', () => {
     //If data does not exist when updating
     it('should return user not found if data does not exist while updating', async () => {
       const updateUserDto: UpdateUserDTO = {
-        email: 'shehryar_tanoli@outlook.com',
-        name: 'Shehryar',
-        password: 'abc',
+        email: TEST_CASE_DATA.EMAIL,
+        name: TEST_CASE_DATA.NAME,
+        password: TEST_CASE_DATA.PASSWORD,
       };
       const user: User = {
-        id: '1',
-        name: 'shehryar-Khan',
-        email: 'shehryar_tanoli1@outlook.com',
-        password: 'password@P1234',
+        id: TEST_CASE_DATA.UUID,
+        name: TEST_CASE_DATA.NAME,
+        email: TEST_CASE_DATA.EMAIL,
+        password: TEST_CASE_DATA.PASSWORD,
       };
-      jest.spyOn(userService['UserModel'], 'findOne').mockResolvedValue(null); // User does not exist in the database
+      jest.spyOn(userService['UserModel'], 'findOne').mockResolvedValue(null);
       await userService.updateUser(
         updateUserDto,
         user,
@@ -213,22 +215,22 @@ describe('UserService', () => {
     // When updating other user data user enters an email which belongs to another user
     it('should return method not allowed status if updating data that does not belong to the user', async () => {
       const updateUserDto: UpdateUserDTO = {
-        email: 'newemail@example.com',
-        name: 'Asfandyar',
-        password: 'password@P123',
+        email: TEST_CASE_DATA.NEW_EMAIL,
+        name: TEST_CASE_DATA.NAME,
+        password: TEST_CASE_DATA.PASSWORD,
       };
       const user: User = {
-        id: '1',
-        name: 'Shehryar',
-        email: 'shehryar_tanoli@example.com',
-        password: 'password@P123',
+        id: TEST_CASE_DATA.ID_1,
+        name: TEST_CASE_DATA.NAME,
+        email: TEST_CASE_DATA.EMAIL,
+        password: TEST_CASE_DATA.PASSWORD,
       };
       jest.spyOn(userService['UserModel'], 'findOne').mockResolvedValue({
-        id: '2',
-        name: 'Another User',
-        email: 'another@example.com',
-        password: 'password@P456',
-      }); // User exists, but does not belong to the current user
+        id: TEST_CASE_DATA.ID_2,
+        name: TEST_CASE_DATA.NAME,
+        email: TEST_CASE_DATA.NEW_EMAIL,
+        password: TEST_CASE_DATA.PASSWORD,
+      });
       await userService.updateUser(
         updateUserDto,
         user,
@@ -247,19 +249,19 @@ describe('UserService', () => {
     // Email already registered when updating the email which belongs to another user
     it('should return email already exist if the email user is trying to update belongs to some other user', async () => {
       const loggedInUser = {
-        id: '550e8400-e29b-41d4-a716-446655440000',
-        email: 'loggedInUser@example.com',
+        id: TEST_CASE_DATA.UUID,
+        email: TEST_CASE_DATA.LOGGED_IN_USER_EMAIL,
       };
       const updateUserDto = {
-        name: 'Updated Name',
-        email: 'existing@example.com', // New email to be updated
-        password: 'newpassword@P123',
+        name: TEST_CASE_DATA.NAME,
+        email: TEST_CASE_DATA.EMAIL,
+        password: TEST_CASE_DATA.NEW_PASSWORD
       };
       const existingUserWithEmail = {
-        id: 'another-uuid',
-        name: 'Another User',
-        email: 'existing@example.com', // Existing user with the new email
-        password: 'anotherpassword@P123',
+        id: TEST_CASE_DATA.ANOTHER_UUID,
+        name: TEST_CASE_DATA.NAME,
+        email: TEST_CASE_DATA.EXISTING_EMAIL,
+        password: TEST_CASE_DATA.NEW_PASSWORD,
       };
       jest
         .spyOn(userService['UserModel'], 'findOne')
@@ -282,19 +284,19 @@ describe('UserService', () => {
     // User update successfully without email
     it('should update user successfully when email not is provided to update', async () => {
       const loggedInUser = {
-        id: '550e8400-e29b-41d4-a716-446655440000',
-        email: 'loggedInUser@example.com',
+        id: TEST_CASE_DATA.UUID,
+        email: TEST_CASE_DATA.LOGGED_IN_USER_EMAIL,
       };
       const updateUserDto = {
-        name: 'Updated Name',
+        name: TEST_CASE_DATA.NAME,
         email: '',
-        password: 'newpassword@P123',
+        password: TEST_CASE_DATA.NEW_PASSWORD,
       };
       const userToUpdate = {
-        id: '550e8400-e29b-41d4-a716-446655440000',
-        name: 'John Doe',
-        email: 'john2@example.com',
-        password: 'password@P123',
+        id: TEST_CASE_DATA.UUID,
+        name: TEST_CASE_DATA.NAME,
+        email: TEST_CASE_DATA.EMAIL,
+        password: TEST_CASE_DATA.PASSWORD,
       };
       jest
         .spyOn(userService['UserModel'], 'findOne')
@@ -315,23 +317,24 @@ describe('UserService', () => {
       });
     });
 
+    // Update user
     it('should update user successfully when email is provided to update', async () => {
       const loggedInUser = {
-        id: '550e8400-e29b-41d4-a716-446655440000',
-        email: 'loggedInUser@example.com',
+        id: TEST_CASE_DATA.UUID,
+        email: TEST_CASE_DATA.EMAIL,
       };
 
       const updateUserDto = {
-        name: 'Updated Name',
-        email: 'john2@example.com',
-        password: 'newpassword@P123',
+        name: TEST_CASE_DATA.NAME,
+        email: TEST_CASE_DATA.EMAIL,
+        password: TEST_CASE_DATA.NEW_PASSWORD,
       };
 
       const userToUpdate = {
-        id: '550e8400-e29b-41d4-a716-446655440000',
-        name: 'John Doe',
-        email: 'john2@example.com',
-        password: 'password@P123',
+        id: TEST_CASE_DATA.UUID,
+        name: TEST_CASE_DATA.NAME,
+        email: TEST_CASE_DATA.EMAIL,
+        password: TEST_CASE_DATA.PASSWORD,
       };
 
       // Mocking findOne to return the user being updated
@@ -348,8 +351,6 @@ describe('UserService', () => {
         request as Request,
         response as Response,
       );
-
-      // Assert that the response status is HttpStatus.ACCEPTED
       expect(response.status).toHaveBeenCalledWith(HttpStatus.ACCEPTED);
       expect(response.json).toHaveBeenCalledWith({
         code: HttpStatus.ACCEPTED,
@@ -363,9 +364,9 @@ describe('UserService', () => {
     // When the user provided id and user's own id does not match
     it('should not allow deleting if the provided id does not match the logged-in user id', async () => {
       const loggedInUser = {
-        id: '550e8400-e29b-41d4-a716-446655440001',
+        id: TEST_CASE_DATA.UUID,
       };
-      const userIdToDelete = '550e8400-e29b-41d4-a716-446655440000';
+      const userIdToDelete = TEST_CASE_DATA.ANOTHER_UUID;
       await userService.deleteUser(
         userIdToDelete,
         loggedInUser as any,
@@ -382,11 +383,11 @@ describe('UserService', () => {
     });
 
     // When no data exist for the id which user wants to update
-    it('should return not found if the provided id has no corresponding data in the database', async () => {
+    it('should return not found if the provided id has no corresponding data in the database while deleting', async () => {
       const loggedInUser = {
-        id: '550e8400-e29b-41d4-a716-446655440001',
+        id: TEST_CASE_DATA.UUID,
       };
-      const userIdToDelete = '550e8400-e29b-41d4-a716-446655440001';
+      const userIdToDelete = TEST_CASE_DATA.UUID;
       jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
       await userService.deleteUser(
         userIdToDelete,
@@ -404,9 +405,9 @@ describe('UserService', () => {
     // User should be deleted
     it('should delete the user if the provided id matches the logged-in user id and exists in the database', async () => {
       const loggedInUser = {
-        id: '550e8400-e29b-41d4-a716-446655440001',
+        id: TEST_CASE_DATA.UUID,
       };
-      const userIdToDelete = '550e8400-e29b-41d4-a716-446655440001';
+      const userIdToDelete = TEST_CASE_DATA.UUID;
       jest
         .spyOn(userRepository, 'findOne')
         .mockResolvedValue(loggedInUser.id as any);
